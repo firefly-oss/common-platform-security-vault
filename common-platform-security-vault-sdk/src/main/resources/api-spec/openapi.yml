@@ -1,0 +1,1957 @@
+openapi: 3.0.1
+info:
+  title: common-platform-security-vault
+  description: Common Platform Security Vault - Secure Credential Storage
+  contact:
+    name: Firefly Software Solutions Inc
+    email: dev@getfirefly.io
+  version: 1.0.0
+servers:
+  - url: http://core.getfirefly.io/vault
+    description: Development Environment
+  - url: /
+    description: Local Development Environment
+tags:
+  - name: Credential Types
+    description: API for managing credential types
+  - name: Encryption Keys
+    description: API for managing encryption keys metadata
+  - name: Credential Decryption
+    description: API for decrypting secure credentials
+  - name: Credential Statuses
+    description: API for managing credential statuses
+  - name: Environment Types
+    description: API for managing environment types
+  - name: Credentials
+    description: API for managing secure credentials
+  - name: Credential Versions
+    description: API for managing credential version history
+paths:
+  /api/v1/environment-types/{id}:
+    get:
+      tags:
+        - Environment Types
+      summary: Get an environment type by ID
+      operationId: getEnvironmentTypeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EnvironmentTypeDTO'
+    put:
+      tags:
+        - Environment Types
+      summary: Update an existing environment type
+      operationId: updateEnvironmentType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentTypeDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EnvironmentTypeDTO'
+    delete:
+      tags:
+        - Environment Types
+      summary: Delete an environment type
+      operationId: deleteEnvironmentType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/encryption-keys/{id}:
+    get:
+      tags:
+        - Encryption Keys
+      summary: Get an encryption key by ID
+      operationId: getEncryptionKeyById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+    put:
+      tags:
+        - Encryption Keys
+      summary: Update an existing encryption key
+      operationId: updateEncryptionKey
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncryptionKeyDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+    delete:
+      tags:
+        - Encryption Keys
+      summary: Delete an encryption key
+      operationId: deleteEncryptionKey
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/credentials/{id}:
+    get:
+      tags:
+        - Credentials
+      summary: Get a credential by ID
+      description: Returns a credential based on the ID
+      operationId: getCredentialById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+        '404':
+          description: Credential not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+    put:
+      tags:
+        - Credentials
+      summary: Update an existing credential
+      description: Updates an existing credential and returns it
+      operationId: updateCredential
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialDTO'
+        required: true
+      responses:
+        '200':
+          description: Credential updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+        '400':
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+        '404':
+          description: Credential not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+    delete:
+      tags:
+        - Credentials
+      summary: Delete a credential
+      description: Deletes a credential
+      operationId: deleteCredential
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Credential deleted
+        '404':
+          description: Credential not found
+  /api/v1/credential-types/{id}:
+    get:
+      tags:
+        - Credential Types
+      summary: Get a credential type by ID
+      operationId: getCredentialTypeById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential type to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Credential type found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+        '404':
+          description: Credential type not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+    put:
+      tags:
+        - Credential Types
+      summary: Update an existing credential type
+      operationId: updateCredentialType
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential type to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialTypeDTO'
+        required: true
+      responses:
+        '200':
+          description: Credential type updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+        '404':
+          description: Credential type not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+    delete:
+      tags:
+        - Credential Types
+      summary: Delete a credential type
+      operationId: deleteCredentialType
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential type to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Credential type deleted
+        '404':
+          description: Credential type not found
+  /api/v1/credential-statuses/{id}:
+    get:
+      tags:
+        - Credential Statuses
+      summary: Get a credential status by ID
+      operationId: getCredentialStatusById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialStatusDTO'
+    put:
+      tags:
+        - Credential Statuses
+      summary: Update an existing credential status
+      operationId: updateCredentialStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialStatusDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialStatusDTO'
+    delete:
+      tags:
+        - Credential Statuses
+      summary: Delete a credential status
+      operationId: deleteCredentialStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /api/v1/environment-types:
+    post:
+      tags:
+        - Environment Types
+      summary: Create a new environment type
+      operationId: createEnvironmentType
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentTypeDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EnvironmentTypeDTO'
+  /api/v1/environment-types/filter:
+    post:
+      tags:
+        - Environment Types
+      summary: Filter environment types
+      operationId: filterEnvironmentTypes
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterRequestEnvironmentTypeDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginationResponseEnvironmentTypeDTO'
+  /api/v1/encryption-keys:
+    post:
+      tags:
+        - Encryption Keys
+      summary: Create a new encryption key
+      operationId: createEncryptionKey
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncryptionKeyDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+  /api/v1/encryption-keys/filter:
+    post:
+      tags:
+        - Encryption Keys
+      summary: Filter encryption keys
+      operationId: filterEncryptionKeys
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterRequestEncryptionKeyDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginationResponseEncryptionKeyDTO'
+  /api/v1/credentials:
+    post:
+      tags:
+        - Credentials
+      summary: Create a new credential
+      description: Creates a new credential and returns it
+      operationId: createCredential
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialDTO'
+        required: true
+      responses:
+        '201':
+          description: Credential created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+        '400':
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialDTO'
+  /api/v1/credentials/{id}/decrypt:
+    post:
+      tags:
+        - Credential Decryption
+      summary: Decrypt a credential
+      description: Decrypts and returns the credential value with full access control and audit logging
+      operationId: decryptCredential
+      parameters:
+        - name: id
+          in: path
+          description: ID of the credential to decrypt
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: reason
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful decryption
+          content:
+            '*/*':
+              schema:
+                type: string
+        '403':
+          description: Access denied
+          content:
+            '*/*':
+              schema:
+                type: string
+        '404':
+          description: Credential not found
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/credentials/filter:
+    post:
+      tags:
+        - Credentials
+      summary: Filter credentials
+      description: Returns a filtered list of credentials based on criteria
+      operationId: filterCredentials
+      parameters:
+        - name: pagination.pageNumber
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pagination.pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: pagination.sortBy
+          in: query
+          description: Field to sort by
+          required: false
+          schema:
+            type: string
+        - name: pagination.sortDirection
+          in: query
+          description: Sort direction (ASC or DESC)
+          required: false
+          schema:
+            type: string
+            default: DESC
+        - name: options.caseInsensitiveStrings
+          in: query
+          description: Enable case-insensitive string filtering
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: options.includeInheritedFields
+          in: query
+          description: Include fields from parent classes
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: filters.code
+          in: query
+          description: Exact filter for code
+          required: false
+          schema:
+            type: string
+        - name: filters.name
+          in: query
+          description: Exact filter for name
+          required: false
+          schema:
+            type: string
+        - name: filters.description
+          in: query
+          description: Exact filter for description
+          required: false
+          schema:
+            type: string
+        - name: filters.encryptedValue
+          in: query
+          description: Exact filter for encrypted value
+          required: false
+          schema:
+            type: string
+        - name: filters.encryptionAlgorithm
+          in: query
+          description: Exact filter for encryption algorithm
+          required: false
+          schema:
+            type: string
+        - name: filters.encryptionIv
+          in: query
+          description: Exact filter for encryption iv
+          required: false
+          schema:
+            type: string
+        - name: filters.credentialOwner
+          in: query
+          description: Exact filter for credential owner
+          required: false
+          schema:
+            type: string
+        - name: filters.credentialContactEmail
+          in: query
+          description: Exact filter for credential contact email
+          required: false
+          schema:
+            type: string
+        - name: filters.expiresAt
+          in: query
+          description: Exact filter for expires at
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[expiresAt].from
+          in: query
+          description: Filter expires at from value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[expiresAt].to
+          in: query
+          description: Filter expires at to value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: filters.rotateBeforeDays
+          in: query
+          description: Exact filter for rotate before days
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[rotateBeforeDays].from
+          in: query
+          description: Filter rotate before days from value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[rotateBeforeDays].to
+          in: query
+          description: Filter rotate before days to value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: filters.lastRotatedAt
+          in: query
+          description: Exact filter for last rotated at
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[lastRotatedAt].from
+          in: query
+          description: Filter last rotated at from value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[lastRotatedAt].to
+          in: query
+          description: Filter last rotated at to value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: filters.rotationEnabled
+          in: query
+          description: Exact filter for rotation enabled
+          required: false
+          schema:
+            type: boolean
+        - name: filters.autoRotationDays
+          in: query
+          description: Exact filter for auto rotation days
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[autoRotationDays].from
+          in: query
+          description: Filter auto rotation days from value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[autoRotationDays].to
+          in: query
+          description: Filter auto rotation days to value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: filters.lastUsedAt
+          in: query
+          description: Exact filter for last used at
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[lastUsedAt].from
+          in: query
+          description: Filter last used at from value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[lastUsedAt].to
+          in: query
+          description: Filter last used at to value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: filters.usageCount
+          in: query
+          description: Exact filter for usage count
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[usageCount].from
+          in: query
+          description: Filter usage count from value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[usageCount].to
+          in: query
+          description: Filter usage count to value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: filters.lastAccessedBy
+          in: query
+          description: Exact filter for last accessed by
+          required: false
+          schema:
+            type: string
+        - name: filters.accessScope
+          in: query
+          description: Exact filter for access scope
+          required: false
+          schema:
+            type: string
+        - name: filters.allowedServices
+          in: query
+          description: Exact filter for allowed services
+          required: false
+          schema:
+            type: string
+        - name: filters.allowedIps
+          in: query
+          description: Exact filter for allowed ips
+          required: false
+          schema:
+            type: string
+        - name: filters.allowedEnvironments
+          in: query
+          description: Exact filter for allowed environments
+          required: false
+          schema:
+            type: string
+        - name: filters.isSensitive
+          in: query
+          description: Exact filter for is sensitive
+          required: false
+          schema:
+            type: boolean
+        - name: filters.requireApprovalForAccess
+          in: query
+          description: Exact filter for require approval for access
+          required: false
+          schema:
+            type: boolean
+        - name: filters.auditAllAccess
+          in: query
+          description: Exact filter for audit all access
+          required: false
+          schema:
+            type: boolean
+        - name: filters.maskInLogs
+          in: query
+          description: Exact filter for mask in logs
+          required: false
+          schema:
+            type: boolean
+        - name: filters.backupEnabled
+          in: query
+          description: Exact filter for backup enabled
+          required: false
+          schema:
+            type: boolean
+        - name: filters.backupLocation
+          in: query
+          description: Exact filter for backup location
+          required: false
+          schema:
+            type: string
+        - name: filters.tags
+          in: query
+          description: Exact filter for tags
+          required: false
+          schema:
+            type: string
+        - name: filters.metadata
+          in: query
+          description: Exact filter for metadata
+          required: false
+          schema:
+            type: string
+        - name: filters.active
+          in: query
+          description: Exact filter for active
+          required: false
+          schema:
+            type: boolean
+        - name: filters.version
+          in: query
+          description: Exact filter for version
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[version].from
+          in: query
+          description: Filter version from value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rangeFilters.ranges[version].to
+          in: query
+          description: Filter version to value
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: filters.createdAt
+          in: query
+          description: Exact filter for created at
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[createdAt].from
+          in: query
+          description: Filter created at from value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[createdAt].to
+          in: query
+          description: Filter created at to value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: filters.updatedAt
+          in: query
+          description: Exact filter for updated at
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[updatedAt].from
+          in: query
+          description: Filter updated at from value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: rangeFilters.ranges[updatedAt].to
+          in: query
+          description: Filter updated at to value
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: filters.createdBy
+          in: query
+          description: Exact filter for created by
+          required: false
+          schema:
+            type: string
+        - name: filters.updatedBy
+          in: query
+          description: Exact filter for updated by
+          required: false
+          schema:
+            type: string
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginationResponseCredentialDTO'
+  /api/v1/credential-versions:
+    post:
+      tags:
+        - Credential Versions
+      summary: Create a new credential version
+      operationId: createCredentialVersion
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialVersionDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialVersionDTO'
+  /api/v1/credential-types:
+    post:
+      tags:
+        - Credential Types
+      summary: Create a new credential type
+      operationId: createCredentialType
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialTypeDTO'
+        required: true
+      responses:
+        '201':
+          description: Credential type created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+        '400':
+          description: Invalid input
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialTypeDTO'
+  /api/v1/credential-types/filter:
+    post:
+      tags:
+        - Credential Types
+      summary: Filter credential types
+      operationId: filterCredentialTypes
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterRequestCredentialTypeDTO'
+        required: true
+      responses:
+        '200':
+          description: Credential types filtered successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginationResponseCredentialTypeDTO'
+  /api/v1/credential-statuses:
+    post:
+      tags:
+        - Credential Statuses
+      summary: Create a new credential status
+      operationId: createCredentialStatus
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialStatusDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialStatusDTO'
+  /api/v1/credential-statuses/filter:
+    post:
+      tags:
+        - Credential Statuses
+      summary: Filter credential statuses
+      operationId: filterCredentialStatuses
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterRequestCredentialStatusDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginationResponseCredentialStatusDTO'
+  /api/v1/credential-versions/{id}:
+    get:
+      tags:
+        - Credential Versions
+      summary: Get a credential version by ID
+      operationId: getCredentialVersionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialVersionDTO'
+  /api/v1/credential-versions/credential/{credentialId}:
+    get:
+      tags:
+        - Credential Versions
+      summary: Get all versions for a credential
+      operationId: getVersionsByCredentialId
+      parameters:
+        - name: credentialId
+          in: path
+          description: Credential ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CredentialVersionDTO'
+  /api/v1/credential-versions/credential/{credentialId}/current:
+    get:
+      tags:
+        - Credential Versions
+      summary: Get current version for a credential
+      operationId: getCurrentVersion
+      parameters:
+        - name: credentialId
+          in: path
+          description: Credential ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CredentialVersionDTO'
+components:
+  schemas:
+    EnvironmentTypeDTO:
+      required:
+        - code
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Environment type ID
+          format: uuid
+          readOnly: true
+        code:
+          maxLength: 50
+          minLength: 2
+          type: string
+          description: Unique code for the environment type
+          example: PRODUCTION
+        name:
+          maxLength: 100
+          minLength: 2
+          type: string
+          description: Name of the environment type
+          example: Production
+        description:
+          type: string
+          description: Description of the environment type
+          example: Production environment
+        active:
+          type: boolean
+          description: Whether the environment type is active
+          default: true
+        version:
+          type: integer
+          description: Version for optimistic locking
+          format: int64
+          readOnly: true
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          format: date-time
+          readOnly: true
+      description: Environment Type information
+    EncryptionKeyDTO:
+      required:
+        - keyId
+        - keyName
+      type: object
+      properties:
+        id:
+          type: string
+          description: Encryption key ID
+          format: uuid
+          readOnly: true
+        keyId:
+          maxLength: 100
+          minLength: 2
+          type: string
+          description: Unique key identifier
+          example: master-key-prod-2025
+        keyName:
+          maxLength: 255
+          minLength: 2
+          type: string
+          description: Name of the encryption key
+          example: Production Master Key 2025
+        keyType:
+          type: string
+          description: Type of key
+          example: SYMMETRIC
+        keyAlgorithm:
+          type: string
+          description: Encryption algorithm
+          example: AES-256-GCM
+        keyProvider:
+          type: string
+          description: KMS provider
+          example: AWS_KMS
+        keyLocation:
+          type: string
+          description: Key location/ARN
+          example: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012
+        keyStatus:
+          type: string
+          description: Key status
+          example: ACTIVE
+        isMasterKey:
+          type: boolean
+          description: Whether this is a master key
+          default: false
+        keyPurpose:
+          type: string
+          description: Purpose of the key
+          example: CREDENTIAL_ENCRYPTION
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        expiresAt:
+          type: string
+          description: Expiration timestamp
+          format: date-time
+        rotatedAt:
+          type: string
+          description: Last rotation timestamp
+          format: date-time
+        rotationScheduleDays:
+          type: integer
+          description: Rotation schedule in days
+          format: int32
+        metadata:
+          type: string
+          description: Additional metadata
+        active:
+          type: boolean
+          description: Whether the key is active
+          default: true
+        version:
+          type: integer
+          description: Version for optimistic locking
+          format: int64
+          readOnly: true
+        createdBy:
+          type: string
+          description: Created by user ID
+          format: uuid
+          readOnly: true
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          format: date-time
+          readOnly: true
+      description: Encryption Key metadata information
+    CredentialDTO:
+      required:
+        - code
+        - credentialStatusId
+        - credentialTypeId
+        - encryptedValue
+        - environmentTypeId
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Credential ID
+          format: uuid
+          readOnly: true
+        code:
+          maxLength: 100
+          minLength: 2
+          type: string
+          description: Unique code for the credential
+          example: STRIPE_API_KEY_PROD
+        name:
+          maxLength: 255
+          minLength: 2
+          type: string
+          description: Name of the credential
+          example: Stripe Production API Key
+        description:
+          type: string
+          description: Description of the credential
+          example: API key for Stripe payment gateway in production
+        credentialTypeId:
+          type: string
+          description: Credential type ID
+          format: uuid
+        credentialStatusId:
+          type: string
+          description: Credential status ID
+          format: uuid
+        environmentTypeId:
+          type: string
+          description: Environment type ID
+          format: uuid
+        providerId:
+          type: string
+          description: Provider ID
+          format: uuid
+        integrationId:
+          type: string
+          description: Integration ID
+          format: uuid
+        serviceId:
+          type: string
+          description: Service ID
+          format: uuid
+        tenantId:
+          type: string
+          description: Tenant ID
+          format: uuid
+        encryptedValue:
+          type: string
+          description: Encrypted credential value
+          writeOnly: true
+        encryptionAlgorithm:
+          type: string
+          description: Encryption algorithm
+          example: AES-256-GCM
+        encryptionKeyId:
+          type: string
+          description: Encryption key ID
+        encryptionIv:
+          type: string
+          description: Encryption IV
+        credentialOwner:
+          type: string
+          description: Credential owner
+        credentialContactEmail:
+          type: string
+          description: Credential contact email
+        expiresAt:
+          type: string
+          description: Expiration timestamp
+          format: date-time
+        rotateBeforeDays:
+          type: integer
+          description: Rotate before days
+          format: int32
+        lastRotatedAt:
+          type: string
+          description: Last rotated timestamp
+          format: date-time
+        rotationEnabled:
+          type: boolean
+          description: Rotation enabled
+        autoRotationDays:
+          type: integer
+          description: Auto rotation days
+          format: int32
+        lastUsedAt:
+          type: string
+          description: Last used timestamp
+          format: date-time
+          readOnly: true
+        usageCount:
+          type: integer
+          description: Usage count
+          format: int64
+          readOnly: true
+        lastAccessedBy:
+          type: string
+          description: Last accessed by
+          readOnly: true
+        accessScope:
+          type: string
+          description: Access scope
+          example: INTERNAL
+        allowedServices:
+          type: string
+          description: Allowed services
+        allowedIps:
+          type: string
+          description: Allowed IPs
+        allowedEnvironments:
+          type: string
+          description: Allowed environments
+        isSensitive:
+          type: boolean
+          description: Is sensitive
+        requireApprovalForAccess:
+          type: boolean
+          description: Require approval for access
+        auditAllAccess:
+          type: boolean
+          description: Audit all access
+        maskInLogs:
+          type: boolean
+          description: Mask in logs
+        backupEnabled:
+          type: boolean
+          description: Backup enabled
+        backupLocation:
+          type: string
+          description: Backup location
+        tags:
+          type: string
+          description: Tags
+        metadata:
+          type: string
+          description: Metadata
+        active:
+          type: boolean
+          description: Whether the credential is active
+          default: true
+        version:
+          type: integer
+          description: Version for optimistic locking
+          format: int64
+          readOnly: true
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          description: Created by user ID
+          format: uuid
+          readOnly: true
+        updatedBy:
+          type: string
+          description: Updated by user ID
+          format: uuid
+          readOnly: true
+      description: Credential information
+    CredentialTypeDTO:
+      required:
+        - code
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Credential type ID
+          format: uuid
+          readOnly: true
+        code:
+          maxLength: 50
+          minLength: 2
+          type: string
+          description: Unique code for the credential type
+          example: API_KEY
+        name:
+          maxLength: 100
+          minLength: 2
+          type: string
+          description: Name of the credential type
+          example: API Key
+        description:
+          type: string
+          description: Description of the credential type
+          example: Simple API key authentication
+        category:
+          type: string
+          description: Category of the credential type
+          example: AUTHENTICATION
+        active:
+          type: boolean
+          description: Whether the credential type is active
+          default: true
+        version:
+          type: integer
+          description: Version for optimistic locking
+          format: int64
+          readOnly: true
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          format: date-time
+          readOnly: true
+      description: Credential type to create
+    CredentialStatusDTO:
+      required:
+        - code
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Credential status ID
+          format: uuid
+          readOnly: true
+        code:
+          maxLength: 50
+          minLength: 2
+          type: string
+          description: Unique code for the credential status
+          example: ACTIVE
+        name:
+          maxLength: 100
+          minLength: 2
+          type: string
+          description: Name of the credential status
+          example: Active
+        description:
+          type: string
+          description: Description of the credential status
+          example: Credential is active and operational
+        active:
+          type: boolean
+          description: Whether the credential status is active
+          default: true
+        version:
+          type: integer
+          description: Version for optimistic locking
+          format: int64
+          readOnly: true
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          description: Last update timestamp
+          format: date-time
+          readOnly: true
+      description: Credential Status information
+    FilterOptions:
+      type: object
+      properties:
+        caseInsensitiveStrings:
+          type: boolean
+        includeInheritedFields:
+          type: boolean
+      description: Filter options for customizing filter behavior
+    FilterRequestEnvironmentTypeDTO:
+      required:
+        - pagination
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/EnvironmentTypeDTO'
+        rangeFilters:
+          $ref: '#/components/schemas/RangeFilter'
+        pagination:
+          $ref: '#/components/schemas/PaginationRequest'
+        options:
+          $ref: '#/components/schemas/FilterOptions'
+      description: Generic filter request that includes both filter criteria and pagination
+    PaginationRequest:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          description: The zero-based page number to retrieve.
+          format: int32
+          example: 0
+          default: 0
+        pageSize:
+          type: integer
+          description: The number of items per page.
+          format: int32
+          example: 10
+          default: 10
+        sortBy:
+          type: string
+          description: The field to sort the results by.
+          example: name
+        sortDirection:
+          type: string
+          description: The direction of sorting, either ASC or DESC.
+          example: DESC
+          default: DESC
+      description: Represents a pagination request for retrieving paginated results, including page number, size, sort field, and direction.
+    RangeFilter:
+      type: object
+      properties:
+        ranges:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RangeObject'
+          description: Map of field names to their range criteria
+      description: Represents range filters for numeric fields
+    RangeObject:
+      type: object
+      properties:
+        from:
+          type: object
+          description: Start value of the range
+        to:
+          type: object
+          description: End value of the range
+      description: Represents a range with from and to values
+    PaginationResponseEnvironmentTypeDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: '#/components/schemas/EnvironmentTypeDTO'
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: The current page number, typically zero-based.
+          format: int32
+      description: Represents a paginated response containing a list of items and pagination metadata.
+    FilterRequestEncryptionKeyDTO:
+      required:
+        - pagination
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/EncryptionKeyDTO'
+        rangeFilters:
+          $ref: '#/components/schemas/RangeFilter'
+        pagination:
+          $ref: '#/components/schemas/PaginationRequest'
+        options:
+          $ref: '#/components/schemas/FilterOptions'
+      description: Generic filter request that includes both filter criteria and pagination
+    PaginationResponseEncryptionKeyDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: '#/components/schemas/EncryptionKeyDTO'
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: The current page number, typically zero-based.
+          format: int32
+      description: Represents a paginated response containing a list of items and pagination metadata.
+    PaginationResponseCredentialDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: '#/components/schemas/CredentialDTO'
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: The current page number, typically zero-based.
+          format: int32
+      description: Represents a paginated response containing a list of items and pagination metadata.
+    CredentialVersionDTO:
+      required:
+        - credentialId
+      type: object
+      properties:
+        id:
+          type: string
+          description: Version ID
+          format: uuid
+          readOnly: true
+        credentialId:
+          type: string
+          description: Credential ID this version belongs to
+          format: uuid
+        versionNumber:
+          type: integer
+          description: Version number
+          format: int32
+          example: 1
+        encryptedValue:
+          type: string
+          description: Encrypted value
+          writeOnly: true
+        encryptionAlgorithm:
+          type: string
+          description: Encryption algorithm
+          example: AES-256-GCM
+        encryptionKeyId:
+          type: string
+          description: Encryption key ID
+        encryptionIv:
+          type: string
+          description: Encryption IV
+        validFrom:
+          type: string
+          description: Valid from timestamp
+          format: date-time
+        validUntil:
+          type: string
+          description: Valid until timestamp
+          format: date-time
+        isCurrent:
+          type: boolean
+          description: Whether this is the current version
+        createdBy:
+          type: string
+          description: Created by user ID
+          format: uuid
+          readOnly: true
+        createdAt:
+          type: string
+          description: Creation timestamp
+          format: date-time
+          readOnly: true
+        rotationReason:
+          type: string
+          description: Reason for rotation
+          example: Scheduled rotation
+        metadata:
+          type: string
+          description: Additional metadata
+      description: Credential Version information for version history
+    FilterRequestCredentialTypeDTO:
+      required:
+        - pagination
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/CredentialTypeDTO'
+        rangeFilters:
+          $ref: '#/components/schemas/RangeFilter'
+        pagination:
+          $ref: '#/components/schemas/PaginationRequest'
+        options:
+          $ref: '#/components/schemas/FilterOptions'
+      description: Filter criteria
+    PaginationResponseCredentialTypeDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: '#/components/schemas/CredentialTypeDTO'
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: The current page number, typically zero-based.
+          format: int32
+      description: Represents a paginated response containing a list of items and pagination metadata.
+    FilterRequestCredentialStatusDTO:
+      required:
+        - pagination
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/CredentialStatusDTO'
+        rangeFilters:
+          $ref: '#/components/schemas/RangeFilter'
+        pagination:
+          $ref: '#/components/schemas/PaginationRequest'
+        options:
+          $ref: '#/components/schemas/FilterOptions'
+      description: Generic filter request that includes both filter criteria and pagination
+    PaginationResponseCredentialStatusDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: '#/components/schemas/CredentialStatusDTO'
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: The current page number, typically zero-based.
+          format: int32
+      description: Represents a paginated response containing a list of items and pagination metadata.
