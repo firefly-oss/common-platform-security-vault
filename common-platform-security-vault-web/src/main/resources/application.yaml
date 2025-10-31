@@ -1,0 +1,200 @@
+spring:
+  application:
+    name: common-platform-security-vault
+    version: 1.0.0
+    description: Common Platform Security Vault - Secure Credential Storage
+    team:
+      name: Firefly Software Solutions Inc
+      email: dev@getfirefly.io
+
+  r2dbc:
+    pool:
+      initial-size: 5
+      max-size: 10
+      max-idle-time: 30m
+      validation-query: SELECT 1
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslMode=${DB_SSL_MODE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslMode=${DB_SSL_MODE}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  threads:
+    virtual:
+      enabled: true
+  
+  task:
+    scheduling:
+      pool:
+        size: 5
+      thread-name-prefix: vault-scheduler-
+
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tagsSorter: alpha
+    operationsSorter: method
+    docExpansion: none
+    filter: true
+  packages-to-scan: com.firefly.common.security.vault.web.controllers
+  paths-to-match: /api/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+firefly:
+  plugin-manager:
+    scan-on-startup: true
+    auto-start-plugins: true
+    plugins-directory: disabled
+    classpath-scan-packages:
+      - com.firefly.plugins
+      - com.firefly.common.security.vault.core.extensions.plugins
+    allowed-packages:
+      - com.firefly.common.security.vault.interfaces
+      - com.firefly.core.plugin.api
+      - com.firefly.plugin
+    event-bus:
+      type: in-memory
+      distributed-events: false
+      log-event-payloads: true
+    lifecycle-events-enabled: true
+    security:
+      enforce-security-checks: true
+      require-signature: false
+      enforce-resource-limits: false
+  
+  security:
+    vault:
+      encryption:
+        algorithm: AES-256-GCM
+        # Hexagonal Architecture: Provider selection
+        # Options: IN_MEMORY, AWS_KMS, AZURE_KEY_VAULT, HASHICORP_VAULT, GOOGLE_CLOUD_KMS
+        provider: IN_MEMORY
+        master-key-id: default-master-key
+        envelope-encryption: false
+
+        # Legacy property for backward compatibility
+        kms-provider: IN_MEMORY
+        aws-kms:
+          region: us-east-1
+          key-arn: ${AWS_KMS_KEY_ARN:}
+          endpoint: ${AWS_KMS_ENDPOINT:}
+        azure-key-vault:
+          vault-url: ${AZURE_VAULT_URL:}
+          key-name: ${AZURE_KEY_NAME:}
+          tenant-id: ${AZURE_TENANT_ID:}
+          client-id: ${AZURE_CLIENT_ID:}
+          client-secret: ${AZURE_CLIENT_SECRET:}
+      
+      audit:
+        enabled: true
+        log-all-attempts: true
+        log-decryptions: true
+        include-performance-metrics: true
+        retention-days: 90
+      
+      rotation:
+        auto-rotation-enabled: false
+        default-rotation-days: 90
+        warning-before-days: 7
+        rotate-expired: true
+        max-versions-to-keep: 10
+      
+      access-control:
+        strict-mode: true
+        require-approval-for-sensitive: true
+        enable-ip-whitelist: true
+        enable-service-whitelist: true
+        max-failed-attempts: 5
+        lockout-duration-minutes: 30
+        enable-rate-limiting: true
+        rate-limit-per-minute: 100
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:firefly_vault}?sslMode=${DB_SSL_MODE:disable}
+    username: ${DB_USERNAME:firefly}
+    password: ${DB_PASSWORD:firefly}
+  flyway:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:firefly_vault}?sslMode=${DB_SSL_MODE:disable}
+    user: ${DB_USERNAME:firefly}
+    password: ${DB_PASSWORD:firefly}
+
+logging:
+  level:
+    root: INFO
+    com.firefly: DEBUG
+    org.springframework.r2dbc: DEBUG
+    org.flywaydb: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: testing
+
+logging:
+  level:
+    root: INFO
+    com.firefly: DEBUG
+    org.springframework.r2dbc: INFO
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: WARN
+    com.firefly: INFO
+    org.springframework: WARN
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

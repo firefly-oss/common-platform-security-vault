@@ -1,0 +1,90 @@
+# Production Configuration Example - Azure Key Vault
+# Copy this file to application-prod.yaml and configure with your Azure credentials
+
+spring:
+  profiles:
+    active: prod
+  
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}?sslMode=require
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    pool:
+      initial-size: 10
+      max-size: 50
+      max-idle-time: 30m
+      validation-query: SELECT 1
+  
+  flyway:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}?sslMode=require
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+firefly:
+  security:
+    vault:
+      # HEXAGONAL ARCHITECTURE: Azure Key Vault Provider
+      encryption:
+        provider: AZURE_KEY_VAULT
+        master-key-id: ${MASTER_KEY_ID}
+        envelope-encryption: true
+        
+        # Azure Key Vault Configuration
+        azure-key-vault:
+          vault-url: ${AZURE_VAULT_URL}
+          key-name: ${AZURE_KEY_NAME}
+          tenant-id: ${AZURE_TENANT_ID}
+          client-id: ${AZURE_CLIENT_ID}
+          client-secret: ${AZURE_CLIENT_SECRET}
+      
+      # Access Control
+      access-control:
+        strict-mode: true
+        require-approval-for-sensitive: true
+        enable-ip-whitelist: true
+        enable-service-whitelist: true
+        max-failed-attempts: 5
+        lockout-duration-minutes: 30
+        enable-rate-limiting: true
+        rate-limit-per-minute: 1000  # Higher limit for production
+      
+      # Rotation Policies
+      rotation:
+        enabled: true
+        default-rotation-days: 90
+        check-interval-hours: 24
+        auto-rotate-on-expiry: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.firefly.common.security.vault: INFO
+    org.springframework.r2dbc: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Server
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+
